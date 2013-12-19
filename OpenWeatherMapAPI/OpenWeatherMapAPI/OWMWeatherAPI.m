@@ -171,6 +171,74 @@
     [_weatherQueue addOperation:operation];
 }
 
+- (void) callMethodReturnRawData:(NSString *) method withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+{
+    
+    NSOperationQueue *callerQueue = [NSOperationQueue currentQueue];
+    
+    // build the lang paramter
+    NSString *langString;
+    if (_lang && _lang.length > 0) {
+        langString = [NSString stringWithFormat:@"&lang=%@", _lang];
+    } else {
+        langString = @"";
+    }
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@%@%@&APPID=%@%@", _baseURL, _apiVersion, method, _apiKey, langString];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        
+        // callback on the caller queue
+        NSDictionary *res = [self convertResult:JSON];
+        [callerQueue addOperationWithBlock:^{
+            callback(nil, res);
+        }];
+        
+        
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        
+        // callback on the caller queue
+        [callerQueue addOperationWithBlock:^{
+            callback(error, nil);
+        }];
+        
+    }];
+    [_weatherQueue addOperation:operation];
+}
+
+//- (void) callMethodWithExplicitUrl:(NSString *) urlString withCallback:( void (^)( NSError* error, NSDictionary *result ) )callback
+//{
+//    
+//    NSOperationQueue *callerQueue = [NSOperationQueue currentQueue];
+//    
+//    NSURL *url = [NSURL URLWithString:urlString];
+//    
+//    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+//    
+//    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+//        
+//        // callback on the caller queue
+////        NSDictionary *res = [self convertResult:JSON];
+//        [callerQueue addOperationWithBlock:^{
+//            callback(nil, JSON);
+//        }];
+//        
+//        
+//    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+//        
+//        // callback on the caller queue
+//        [callerQueue addOperationWithBlock:^{
+//            callback(error, nil);
+//        }];
+//        
+//    }];
+//    [_weatherQueue addOperation:operation];
+//}
+
 #pragma mark - public api
 
 - (void) setApiVersion:(NSString *) version {
@@ -300,6 +368,20 @@
     [self callMethod:method withCallback:callback];
 }
 
+
+
+#pragma mark custom - get cities
+
+-(void) getCities:(NSString *)searchTerm andCallback:(void (^)(NSError *, NSDictionary *))callback{
+    NSString *method = [NSString stringWithFormat:@"/find?q=%@&type=like&mode=json&units=metric", searchTerm];
+    [self callMethodReturnRawData:method withCallback:callback];
+}
+
+
+//-(void) getCities:(NSString *)searchTerm andCallback:(void (^)(NSError *, NSDictionary *))callback{
+//    NSString *method = [NSString stringWithFormat:@"http://gd.geobytes.com/AutoCompleteCity?q=%@", searchTerm];
+//    [self callMethodWithExplicitUrl:method withCallback:callback];
+//}
 
 
 @end

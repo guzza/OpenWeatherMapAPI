@@ -57,14 +57,18 @@ typedef enum {
 
 -(void) dailyForecastWeatherByCityName:(NSString *) name
                              withCount:(int) count
-                          andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+                           andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 
 -(void) dailyForecastWeatherByCoordinate:(CLLocationCoordinate2D) coordinate
                                withCount:(int) count
-                            andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+                             andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 
 -(void) dailyForecastWeatherByCityId:(NSString *) cityId
                            withCount:(int) count
-                        andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+                         andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
+
+#pragma mark custom - get cities
+
+-(void) getCities:(NSString*) searchTerm andCallback:( void (^)( NSError* error, NSDictionary *result ) )callback;
 
 @end
