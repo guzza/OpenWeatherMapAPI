@@ -371,7 +371,6 @@
 
 -(void) getCities:(NSString *)searchTerm andCallback:(void (^)(NSError *, NSDictionary *))callback{
     NSString *method = [NSString stringWithFormat:@"/find?q=%@&type=like&mode=json", searchTerm];
-    NSLog(@"%@",method);
     [self callMethodReturnRawData:method withCallback:callback];
 }
 
