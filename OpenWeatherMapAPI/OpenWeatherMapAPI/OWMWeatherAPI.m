@@ -184,7 +184,7 @@
     
     NSString *urlString = [NSString stringWithFormat:@"%@%@%@&APPID=%@%@", _baseURL, _apiVersion, method, _apiKey, langString];
     
-    NSURL *url = [NSURL URLWithString:urlString];
+    NSURL *url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
@@ -370,7 +370,8 @@
 #pragma mark custom - get cities
 
 -(void) getCities:(NSString *)searchTerm andCallback:(void (^)(NSError *, NSDictionary *))callback{
-    NSString *method = [NSString stringWithFormat:@"/find?q=%@&type=like&mode=json&units=metric", searchTerm];
+    NSString *method = [NSString stringWithFormat:@"/find?q=%@&type=like&mode=json", searchTerm];
+    NSLog(@"%@",method);
     [self callMethodReturnRawData:method withCallback:callback];
 }
 
